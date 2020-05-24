@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:scrap/Page/Auth.dart';
 import 'package:scrap/function/toDatabase/phoneAuthen.dart';
 import 'package:scrap/widget/Loading.dart';
 import 'package:scrap/widget/warning.dart';
@@ -69,8 +68,8 @@ class _OTPScreenState extends State<OTPScreen> {
       setState(() {
         loading = false;
       });
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Authen()));
+      // Navigator.push(
+      //     context, MaterialPageRoute(builder: (context) => Authen()));
     } catch (e) {
       switch (e.toString()) {
         case 'PlatformException(ERROR_INVALID_VERIFICATION_CODE, The SMS verification code used to create the phone auth credential is invalid. Please resend the verification code SMS and be sure to use the verification code provided by the user., null)':
@@ -92,8 +91,8 @@ class _OTPScreenState extends State<OTPScreen> {
       setState(() {
         loading = false;
       });
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Authen()));
+      // Navigator.push(
+      //     context, MaterialPageRoute(builder: (context) => Authen()));
     }).catchError((e) {
       switch (e.toString()) {
         case 'PlatformException(ERROR_INVALID_VERIFICATION_CODE, The SMS verification code used to create the phone auth credential is invalid. Please resend the verification code SMS and be sure to use the verification code provided by the user., null)':
@@ -120,8 +119,8 @@ class _OTPScreenState extends State<OTPScreen> {
         loading = false;
       });
       Navigator.pop(context);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Authen()));
+      // Navigator.push(
+      //     context, MaterialPageRoute(builder: (context) => Authen()));
     }).catchError((e) {
       switch (e.toString()) {
         case 'PlatformException(ERROR_INVALID_VERIFICATION_CODE, The SMS verification code used to create the phone auth credential is invalid. Please resend the verification code SMS and be sure to use the verification code provided by the user., null)':

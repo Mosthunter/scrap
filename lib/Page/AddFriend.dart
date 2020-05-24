@@ -61,7 +61,7 @@ class _AddFriendState extends State<AddFriend> {
                             style: TextStyle(
                                 fontSize: a.width / 8, color: Colors.white),
                           ),
-                          Text("ค้นหาไอดีแล้วปากระดาษใส่พวกเขากัน",
+                          Text("ค้นหาไอดีแล้วปาสแครปใส่พวกเขากัน",
                               style: TextStyle(
                                   color: Colors.white, fontSize: a.width / 18)),
                         ],

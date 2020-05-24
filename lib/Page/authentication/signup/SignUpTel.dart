@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:scrap/Page/Auth.dart';
 import 'package:scrap/function/toDatabase/phoneAuthen.dart';
 import 'package:scrap/services/jsonConverter.dart';
-import 'package:scrap/services/provider.dart';
 import 'package:scrap/widget/Loading.dart';
 import 'package:scrap/widget/warning.dart';
 
@@ -94,17 +92,17 @@ class _SignUpTelState extends State<SignUpTel> {
           phone: usePhone ? phone : null,
           token: token);
       jsonConverter.writeContent(listm: []);
-      final uid = await Provider.of(context)
-          .auth
-          .createUserWithEmailAndPassword(widget.email, widget.password);
-      await regis.toDb(uid);
-      await regis.addToken(uid);
+      // final uid = await Provider.of(context)
+      //     .auth
+      //     .createUserWithEmailAndPassword(widget.email, widget.password);
+      // await regis.toDb(uid);
+      // await regis.addToken(uid);
 
       setState(() {
         loading = false;
       });
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Authen()));
+      // Navigator.push(
+      //     context, MaterialPageRoute(builder: (context) => Authen()));
     } catch (e) {
       setState(() {
         loading = false;

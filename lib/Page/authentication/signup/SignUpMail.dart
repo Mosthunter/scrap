@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:scrap/Page/authentication/signup/SignUpTel.dart';
 import 'package:scrap/Page/setting/servicedoc.dart';
-import 'package:scrap/Page/signup/SignUpTel.dart';
 import 'package:scrap/widget/Loading.dart';
 import 'package:scrap/widget/Toast.dart';
 import 'package:scrap/widget/warning.dart';
@@ -85,7 +85,7 @@ class _SignUpMailState extends State<SignUpMail> {
                         ),
                         Container(
                           child: Text(
-                            '"ผู้คนกำลังรออ่านกระดาษของคุณ"',
+                            '"ผู้คนกำลังรออ่านสแครปของคุณ"',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: a.width / 18,
@@ -326,7 +326,6 @@ class _SignUpMailState extends State<SignUpMail> {
     setState(() {
       loading = false;
     });
-    Dg().warning(
-        context, 'ขออภัยอีเมลนี้ได้ลงทะเบียนไว้แล้ว', "เกิดผิดพลาด");
+    Dg().warning(context, 'ขออภัยอีเมลนี้ได้ลงทะเบียนไว้แล้ว', "เกิดผิดพลาด");
   }
 }

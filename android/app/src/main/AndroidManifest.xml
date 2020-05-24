@@ -16,7 +16,9 @@
         android:name=".Application"
         android:label="scrap"
         android:icon="@mipmap/launcher_icon">
-
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3612265554509092~5449650222"/>
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
                 android:value="AIzaSyBIurGYOrtdXJdBaWZ9wXPSert9_Hjjs8Y" />

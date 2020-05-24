@@ -5,7 +5,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:scrap/services/provider.dart';
+import 'package:provider/provider.dart';
+import 'package:scrap/provider/UserData.dart';
 import 'package:scrap/widget/Loading.dart';
 import 'package:scrap/widget/warning.dart';
 
@@ -40,7 +41,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   describeApp() async {
     DateTime now = DateTime.now();
     String date = DateFormat('y,M,d').format(now);
-    final uid = await Provider.of(context).auth.currentUser();
+    final user = Provider.of<UserData>(context, listen: false);
     try {
       setState(() {
         loading = true;
@@ -49,7 +50,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
           .collection('App')
           .document('feedBack')
           .collection(date)
-          .add({'text': text, 'time': now, 'uid': uid}).then((value) =>
+          .add({'text': text, 'time': now, 'uid': user.uid}).then((value) =>
               image != null ? addData(image, value.documentID) : null);
       setState(() {
         loading = false;
@@ -143,7 +144,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       Padding(
                         padding: const EdgeInsets.only(left: 15, right: 15),
                         child: Text(
-                          'หากคุณมีไอเดียดีๆที่อยากเพิ่มฟังก์ชันการใช้งานหรือความกวนใจขณะใช้งานแอปพลิเคชัน\n“ ปากระดาษใส่เราสิ! ”',
+                          'หากคุณมีไอเดียดีๆที่อยากเพิ่มฟังก์ชันการใช้งานหรือความกวนใจขณะใช้งานแอปพลิเคชัน\n“ ปาสแครปใส่เราสิ! ”',
                           style: TextStyle(
                               fontSize: a.width / 17,
                               color: Colors.white,

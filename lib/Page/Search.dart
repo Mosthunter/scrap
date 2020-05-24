@@ -102,7 +102,7 @@ class _SearchState extends State<Search> {
                                         fontSize: a.width / 6.5,
                                         color: Colors.white),
                                   ),
-                                  Text("ค้นหาไอดีแล้วปากระดาษใส่พวกเขากัน",
+                                  Text("ค้นหาไอดีแล้วปาสแครปใส่พวกเขากัน",
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: a.width / 16)),
@@ -712,12 +712,11 @@ class _SearchState extends State<Search> {
                     Navigator.pop(context);
                     Navigator.pop(context);
                     Navigator.pop(context);
-                    await scraps.throwTo(
+                    await scraps.throwTo(context,
                         uid: widget.doc['uid'],
                         writer: widget.doc['id'],
                         thrownUID: thrownUID,
-                        text: widget.data['text'],
-                        public: widget.data['public']);
+                        text: widget.data['text']);
                     toast('ปาใส่"$user"แล้ว');
                   }
                 },
@@ -738,6 +737,7 @@ class _SearchState extends State<Search> {
       'friendList': FieldValue.arrayUnion([uid])
     }, merge: true);
     await jsonConverter.addContent(
+        uid: uid,
         id: newFriend,
         imgUrl: img,
         joinD: join.runtimeType == String
@@ -752,7 +752,7 @@ class _SearchState extends State<Search> {
         msg: text,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
-        timeInSecForIos: 1,
+        // timeInSecForIos: 1,
         backgroundColor: Colors.white60,
         textColor: Colors.black,
         fontSize: 16.0);

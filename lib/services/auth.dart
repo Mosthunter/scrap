@@ -36,7 +36,7 @@ class Auth implements BaseAuth {
 
   @override
   Future<String> currentUser() async {
-    return (await _firebaseAuth.currentUser())?.uid ?? 'guest';
+    return (await _firebaseAuth.currentUser())?.uid ?? '';
   }
 
   @override

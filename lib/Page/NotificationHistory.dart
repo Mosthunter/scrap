@@ -232,7 +232,7 @@ class _NotificationHistoryState extends State<NotificationHistory> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         SizedBox(
-                          width: a.width/1.2,
+                          width: a.width / 1.2,
                           child: Row(
                             children: <Widget>[
                               SizedBox(
@@ -242,13 +242,14 @@ class _NotificationHistoryState extends State<NotificationHistory> {
                                       : '@' + doc.data['writer'],
                                   style: TextStyle(
                                       fontSize: a.width / 15,
-                                      color: doc.data['writer'] == 'ไม่ระบุตัวตน'
-                                          ? Colors.white
-                                          : Color(0xff26A4FF)),
+                                      color:
+                                          doc.data['writer'] == 'ไม่ระบุตัวตน'
+                                              ? Colors.white
+                                              : Color(0xff26A4FF)),
                                 ),
                               ),
                               Text(
-                                'ปากระดาษใส่คุณ',
+                                'ปาสแครปใส่คุณ',
                                 style: TextStyle(
                                     fontSize: a.width / 15,
                                     color: Colors.grey[300]),

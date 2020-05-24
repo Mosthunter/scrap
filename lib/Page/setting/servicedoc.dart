@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:scrap/services/provider.dart';
+import 'package:provider/provider.dart';
+import 'package:scrap/provider/UserData.dart';
 import 'package:scrap/widget/Loading.dart';
 
 class Servicedoc extends StatefulWidget {
@@ -127,13 +128,13 @@ class _ServicedocState extends State<Servicedoc> {
   }
 
   accept() async {
-    final uid = await Provider.of(context).auth.currentUser();
+    final user = Provider.of<UserData>(context, listen: false);
     setState(() {
       loading = true;
     });
     await Firestore.instance
         .collection('Users')
-        .document(uid)
+        .document(user.uid)
         .updateData({'accept': true});
     setState(() {
       loading = false;

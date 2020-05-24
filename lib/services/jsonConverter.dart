@@ -16,9 +16,18 @@ class JsonConverter {
     return File('$path/friends.txt');
   }
 
-  Future<File> writeContent({@required List listm}) async {
+  Future<File> get _localFriendList async {
+    final path = await _localPath;
+    return File('$path/friendList.txt');
+  }
+
+  Future<File> writeContent({@required List listm, List friends}) async {
     final file = await _localFile;
-    // Write the file
+    if (friends != null) {
+      final list = await _localFriendList;
+      // Write the file
+      list.writeAsString(json.encode(friends));
+    }
     return file.writeAsString(json.encode(listm));
   }
 
@@ -69,25 +78,40 @@ class JsonConverter {
     }
   }
 
-  Future<List> addContent({String id, String imgUrl, String joinD}) async {
+  Future<List> readFriendList() async {
+    final fileFriend = await _localFriendList;
+    List friendList = json.decode(await fileFriend.readAsString());
+    return friendList ?? [];
+  }
+
+  Future<List> addContent(
+      {String uid, String id, String imgUrl, String joinD}) async {
     try {
+      final fileFriend = await _localFriendList;
+      List friendList = json.decode(await fileFriend.readAsString());
       List<Map> list = await readContents();
+      friendList.add(uid);
       list.add({'img': imgUrl, 'id': id, 'join': joinD});
-      await writeContent(listm: list);
+      await writeContent(listm: list, friends: friendList);
       return list;
     } catch (e) {
       return [];
     }
   }
 
-  Future<List> removeContent({String key, String where}) async {
+  Future<List> removeContent({String uid, String key, String where}) async {
     try {
       List<Map> list = await readContents();
+      final fileFriend = await _localFriendList;
+      List friendList = json.decode(await fileFriend.readAsString());
+      friendList.remove(uid);
       list.removeWhere((data) => data[key] == where);
-      await writeContent(listm: list);
+      await writeContent(listm: list, friends: friendList);
       return list;
     } catch (e) {
       return [];
     }
   }
 }
+
+final jsonConv = JsonConverter();

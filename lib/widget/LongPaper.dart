@@ -212,7 +212,7 @@ class _LongPaperState extends State<LongPaper> {
           return AlertDialog(
             backgroundColor: Colors.white,
             content: Container(
-              child: Text('คุณต้องการลบกระดาษแผ่นนี้ใช่หรือไม่'),
+              child: Text('คุณต้องการลบสแครปแผ่นนี้ใช่หรือไม่'),
             ),
             actions: <Widget>[
               FlatButton(

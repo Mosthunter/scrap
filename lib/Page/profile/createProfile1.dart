@@ -1,26 +1,39 @@
-import 'dart:io'; //ref from creatProfile
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:scrap/widget/Toast.dart';
+import 'package:provider/provider.dart';
 import 'package:scrap/Page/profile/createProfile2.dart';
+import 'package:scrap/function/authentication/AuthenService.dart';
+import 'package:scrap/provider/UserData.dart';
+import 'package:scrap/widget/Loading.dart';
+import 'package:scrap/widget/ScreenUtil.dart';
+import 'package:scrap/widget/Toast.dart';
 
 class CreateProfile1 extends StatefulWidget {
-  final String uid;
-  CreateProfile1({@required this.uid});
   @override
   _CreateProfile1State createState() => _CreateProfile1State();
 }
 
 class _CreateProfile1State extends State<CreateProfile1> {
   var _formKey = GlobalKey<FormState>();
-  String id;
+  TextEditingController id = TextEditingController();
+  TextEditingController password = TextEditingController();
   File image;
+  StreamSubscription loadStatus;
   bool loading = false;
 
   @override
   void initState() {
+    initID();
+    loadStatus =
+        authService.loading.listen((value) => setState(() => loading = value));
     super.initState();
+  }
+
+  initID() {
+    final user = Provider.of<UserData>(context, listen: false);
+    id.text = user.id;
   }
 
   sendCam() async {
@@ -39,26 +52,22 @@ class _CreateProfile1State extends State<CreateProfile1> {
     }
   }
 
-  Future<bool> hasAccount(String user) async {
-    final QuerySnapshot users = await Firestore.instance
-        .collection('Users')
-        .where('id', isEqualTo: user)
-        .limit(1)
-        .getDocuments();
-    final List<DocumentSnapshot> doc = users.documents;
-    return doc.length == 1;
+  @override
+  void dispose() {
+    id.dispose();
+    password.dispose();
+    loadStatus.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     Size scr = MediaQuery.of(context).size;
+    screenutilInit(context);
     return WillPopScope(
-      onWillPop: () =>
-          warning('คุณต้องการออกจากหน้านี้ใช่หรือไม่', function: () {
-        Navigator.pop(context);
-        Navigator.pop(context);
-      }),
+      onWillPop: () => null,
       child: Scaffold(
+        backgroundColor: Colors.black,
         body: Stack(
           children: <Widget>[
             SingleChildScrollView(
@@ -68,45 +77,33 @@ class _CreateProfile1State extends State<CreateProfile1> {
                     color: Colors.black,
                     height: scr.height,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Padding(
                           padding: EdgeInsets.only(
-                              top: scr.width / 10, left: scr.width / 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'บัญชีผู้ใช้',
-                                style: TextStyle(
-                                  fontSize: scr.width / 12,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                              Text(
-                                'เพิ่มข้อมูลเพื่อให้ผู้คนค้นหาคุณเจอ',
-                                style: TextStyle(
-                                  fontSize: scr.width / 18,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w100,
-                                ),
-                              ),
-                            ],
+                            top: scr.width / 3,
+                          ),
+                          child: Text(
+                            'สร้างไอดี',
+                            style: TextStyle(
+                              fontSize: scr.width / 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                         ),
                         Container(
-                            margin: EdgeInsets.only(top: scr.height / 15),
+                            margin: EdgeInsets.only(top: appBarHeight / 3.5),
                             alignment: Alignment.center,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                InkWell(
+                                GestureDetector(
                                   child: Container(
                                     width: scr.width / 2.4,
                                     height: scr.width / 2.4,
                                     decoration: BoxDecoration(
-                                      color: Color(0xff26A4FF),
+                                      color: Color(0xff6A6A6A),
                                       borderRadius: BorderRadius.circular(
                                         scr.width / 3,
                                       ),
@@ -116,10 +113,28 @@ class _CreateProfile1State extends State<CreateProfile1> {
                                     child: ClipRRect(
                                         child: image == null
                                             ? SizedBox(
-                                                child: Icon(
-                                                  Icons.image,
-                                                  size: scr.width / 6,
-                                                  color: Colors.white,
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.person,
+                                                      size: scr.width / 5,
+                                                      color: Color(0xfffffffff)
+                                                          .withOpacity(0.37),
+                                                    ),
+                                                    Text(
+                                                      'เพิ่มรูป',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: s42,
+                                                        color: Color(
+                                                                0xfffffffff)
+                                                            .withOpacity(0.37),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               )
                                             : Image.file(
@@ -148,129 +163,105 @@ class _CreateProfile1State extends State<CreateProfile1> {
                                             Container(
                                               margin: EdgeInsets.only(
                                                   top: scr.width / 16),
-                                              width: scr.width / 1.8,
-                                              height: scr.height / 12.1,
+                                              width: scr.width / 1.5,
+                                              height: scr.height / 15,
                                               decoration: BoxDecoration(
-                                                color: Colors.black,
-                                                borderRadius: BorderRadius.only(
-                                                    topRight:
-                                                        const Radius.circular(
-                                                            10.0),
-                                                    bottomRight:
-                                                        const Radius.circular(
-                                                            10.0),
-                                                    topLeft:
-                                                        const Radius.circular(
-                                                            10.0),
-                                                    bottomLeft:
-                                                        const Radius.circular(
-                                                            10.0)),
-                                                border: Border(
-                                                  top: BorderSide(
-                                                      width: 1.0,
-                                                      color: Colors.white),
-                                                  left: BorderSide(
-                                                      width: 1.0,
-                                                      color: Colors.white),
-                                                  right: BorderSide(
-                                                      width: 1.0,
-                                                      color: Colors.white),
-                                                  bottom: BorderSide(
-                                                      width: 1.0,
-                                                      color: Colors.white),
-                                                ),
-                                              ),
+                                                  color: Color(0xfff272727),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(7))),
                                               child: TextFormField(
+                                                controller: id,
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                   color: Colors.white,
-                                                  fontSize: scr.width / 13,
+                                                  fontSize: s52,
                                                   fontWeight: FontWeight.w900,
                                                 ),
                                                 decoration: InputDecoration(
                                                   border: InputBorder.none,
-                                                  hintText: '@yourname',
+                                                  hintText: '@somename',
                                                   hintStyle: TextStyle(
-                                                      color: Colors.grey[500]),
+                                                      fontSize: s52,
+                                                      height: 1.2,
+                                                      color: Color(0xffFFFFFF)
+                                                          .withOpacity(0.15)),
                                                 ),
-                                                validator: ((val) {
-                                                  return val.trim() == null ||
-                                                          val.trim() == ''
-                                                      ? Taoast().toast(
-                                                          "กรุณาใส่ไอดีของท่าน")
-                                                      : null;
-                                                }),
-                                                onSaved: (gId) =>
-                                                    gId.trim()[0] == '@'
-                                                        ? id = gId
-                                                            .trim()
-                                                            .substring(1)
-                                                        : id = gId.trim(),
+                                                //ทำให้ตัวแรกของไอดีเป็น @
+                                                onChanged: (gId) {
+                                                  var trim = gId.trim();
+                                                  trim[0] == '@'
+                                                      ? id.text =
+                                                          trim.substring(1)
+                                                      : id.text = trim;
+                                                  id.selection = TextSelection
+                                                      .fromPosition(
+                                                          TextPosition(
+                                                              offset: id.text
+                                                                  .length));
+                                                },
                                                 textInputAction:
                                                     TextInputAction.done,
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(top: 15),
-                                          child: Text(
-                                            'คุณสามารถเลือกรูปแบบ\nไม่เปิดเผยตัวตนได้ในขณะที่คุณใช้งาน',
-                                            style: TextStyle(
-                                              fontSize: scr.width / 19,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w100,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              top: scr.height / 15,
-                                              left: scr.width / 6.5,
-                                              right: scr.width / 6.5),
-                                          child: MaterialButton(
-                                            child: Text(
-                                              'ต่อไป',
-                                              style: TextStyle(
-                                                  fontSize: scr.width / 13,
+                                            //pass
+                                            Container(
+                                              margin: EdgeInsets.only(
+                                                  top: scr.width / 16),
+                                              width: scr.width / 1.5,
+                                              height: scr.height / 15,
+                                              decoration: BoxDecoration(
+                                                  color: Color(0xfff272727),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(7))),
+                                              child: TextFormField(
+                                                controller: password,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: s52,
                                                   fontWeight: FontWeight.w900,
-                                                  color: Colors.black),
+                                                ),
+                                                obscureText: true,
+                                                //autofocus: false,
+                                                //obscureText: true,
+                                                decoration: InputDecoration(
+                                                  border: InputBorder.none,
+                                                  hintText: 'password',
+                                                  hintStyle: TextStyle(
+                                                      fontSize: s52,
+                                                      height: 1.2,
+                                                      color: Color(0xffFFFFFF)
+                                                          .withOpacity(0.15)),
+                                                ),
+                                                onChanged: (val2) {
+                                                  password.text = val2.trim();
+                                                  password.selection =
+                                                      TextSelection.fromPosition(
+                                                          TextPosition(
+                                                              offset: password
+                                                                  .text
+                                                                  .length));
+                                                  setState(() {});
+                                                },
+                                                //ถ้าพาสเวิร์ด=='' || == null => toast
+                                                validator: ((val) {
+                                                  return val.trim() == null ||
+                                                          val.trim() == ''
+                                                      ? Taoast().toast(
+                                                          "กรุณาใส่พาสเวิร์ดของท่าน")
+                                                      : null;
+                                                }),
+                                                textInputAction:
+                                                    TextInputAction.done,
+                                              ),
                                             ),
-                                            onPressed: () async {
-                                              if (_formKey.currentState
-                                                  .validate()) {
-                                                _formKey.currentState.save();
-                                                image != null
-                                                    ? await hasAccount(id)
-                                                        ? warning(
-                                                            'ไอดีนี้ได้ทำการลงทะเบียนไว้แล้ว')
-                                                        : Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (context) =>
-                                                                    CreateProfile2(
-                                                                        uid: widget
-                                                                            .uid,
-                                                                        pro: {
-                                                                          'img':
-                                                                              image,
-                                                                          'id':
-                                                                              id
-                                                                        })))
-                                                    : warning(
-                                                        'กรุณาเลือกรูปโปรไฟล์ของท่าน');
-                                              }
-                                            },
-                                            color: Colors.white,
-                                            elevation: 0,
-                                            height: 60,
-                                            textColor: Colors.white,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(300),
+                                            SizedBox(
+                                              height: appBarHeight,
                                             ),
-                                          ),
+                                            next(),
+                                          ],
                                         ),
                                       ],
                                     ),
@@ -284,15 +275,78 @@ class _CreateProfile1State extends State<CreateProfile1> {
                 ],
               ),
             ),
-            loading
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : SizedBox()
+            loading ? Loading() : SizedBox()
           ],
         ),
       ),
     );
+  }
+
+  Widget next() {
+    final user = Provider.of<UserData>(context, listen: false);
+    Size scr = MediaQuery.of(context).size;
+    if (password.text != '' && id.text != '' && image != null) {
+      return Container(
+        child: GestureDetector(
+          child: Container(
+            padding: EdgeInsets.all(appBarHeight / 7),
+            width: scr.width / 1.5,
+            height: scr.height / 15,
+            decoration: BoxDecoration(
+                color: Color(0xff26A4FE),
+                borderRadius: BorderRadius.all(Radius.circular(7))),
+            child: Text(
+              'ต่อไป',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: s52,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xfffFFFFFF)),
+            ),
+          ),
+          onTap: () async {
+            authService.loading.add(true);
+            if (password.text.length >= 6) {
+              var docs =
+                  (await authService.getDocuments('id', id.text)).documents;
+              if (docs.length > 0 && docs[0].documentID != user.uid) {
+                authService.warn('idนี้มีคนใช้แล้ว');
+              } else {
+                user.id = id.text;
+                user.img = image;
+                user.password = password.text;
+                await fireStore
+                    .collection('Account')
+                    .document(user.uid)
+                    .setData({'id': id.text}, merge: true);
+                authService.loading.add(false);
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CreateProfile2()));
+              }
+            } else {
+              authService.warn('รหัสผ่านต้องมี6ตัวขึ้นไป');
+            }
+          },
+        ),
+      );
+    } else {
+      return Container(
+        padding: EdgeInsets.all(appBarHeight / 7),
+        width: scr.width / 1.5,
+        height: scr.height / 15,
+        decoration: BoxDecoration(
+            color: Color(0xff515151),
+            borderRadius: BorderRadius.all(Radius.circular(7))),
+        child: Text(
+          'ต่อไป',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              fontSize: s52,
+              fontWeight: FontWeight.w900,
+              color: Color(0xfffFFFFFF).withOpacity(0.38)),
+        ),
+      );
+    }
   }
 
   warning(String warn, {Function function}) {

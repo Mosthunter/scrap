@@ -4,7 +4,7 @@ class RandomLocation {
   final random = Random();
 
   ///declear varieble [r] radius
-  var r = 42 / 111300; // = 64 meters
+  var r = 210 / 111300; // = 2000 meters
   Map getLocation({double lat, double lng}) {
     ///random 2 double then init varieble [u] and [v]
     double u = random.nextDouble();

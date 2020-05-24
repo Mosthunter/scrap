@@ -28,7 +28,7 @@ class FriendManager {
         getInfo(fID, uid, doc.data['id']);
       });
     }
-    await jsonConverter.writeContent(listm: fID);
+    await jsonConverter.writeContent(listm: fID, friends: friends);
   }
 
   updateData(String uid, int index) async {

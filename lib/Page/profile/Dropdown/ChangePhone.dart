@@ -1,12 +1,11 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:scrap/services/provider.dart';
+import 'package:provider/provider.dart';
+import 'package:scrap/Page/OTPScreen.dart';
+import 'package:scrap/provider/UserData.dart';
 import 'package:scrap/widget/Loading.dart';
 import 'package:scrap/widget/Toast.dart';
-
-import '../../OTPScreen.dart';
 
 class ChangePhone extends StatefulWidget {
   @override
@@ -67,10 +66,10 @@ class _ChangePhoneState extends State<ChangePhone> {
   }
 
   changeNumber() async {
-    final uid = await Provider.of(context).auth.currentUser();
+    final user = Provider.of<UserData>(context, listen: false);
     await Firestore.instance
         .collection('Users')
-        .document(uid)
+        .document(user.uid)
         .updateData({'phone': phone});
     setState(() {
       loading = false;
@@ -114,7 +113,7 @@ class _ChangePhoneState extends State<ChangePhone> {
                         ),
                       ),
                       Container(
-                        height: a.height/1.2,
+                        height: a.height / 1.2,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
@@ -225,7 +224,6 @@ class _ChangePhoneState extends State<ChangePhone> {
                                 ],
                               ),
                             ),
-
                             SizedBox(
                               height: a.width / 7,
                             ),

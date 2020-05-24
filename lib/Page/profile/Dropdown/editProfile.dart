@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:scrap/Page/profile/Dropdown/ChangePhone.dart';
+import 'package:scrap/function/cacheManage/UserInfo.dart';
 import 'package:scrap/widget/Loading.dart';
 import 'package:scrap/widget/Toast.dart';
-
 
 class EditProfile extends StatefulWidget {
   final DocumentSnapshot doc;
@@ -98,6 +98,7 @@ class _EditProfileState extends State<EditProfile> {
     final StorageUploadTask task = ref.putFile(img);
     var picUrl = await (await task.onComplete).ref.getDownloadURL();
     await addImg(uid, picUrl);
+    await userinfo.editProImage(picUrl);
     if (task.isInProgress) {
       setState(() {
         loading = true;

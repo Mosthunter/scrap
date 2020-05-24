@@ -66,7 +66,7 @@ class _HistoryState extends State<History> {
                   );
                 },
               ),
-              Text('ประวัติการทิ้งกระดาษ',
+              Text('ประวัติการทิ้งสแครป',
                   style: TextStyle(
                     fontSize: scr.width / 14,
                     color: Colors.white,
@@ -132,7 +132,7 @@ class _HistoryState extends State<History> {
             color: Colors.white60,
             height: scr.height / 10,
           ),
-          Text('คุณไม่มีประวัติการทิ้งกระดาษ',
+          Text('คุณไม่มีประวัติการทิ้งสแครป',
               style: TextStyle(color: Colors.white, fontSize: scr.width / 16),
               textAlign: TextAlign.center),
         ],

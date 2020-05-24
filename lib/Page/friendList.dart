@@ -198,7 +198,7 @@ class _FriendListState extends State<FriendList> {
                                     fontWeight: FontWeight.w300),
                               ),
                               Text(
-                                'ค้นหาสหายแล้วปากระดาษใส่พวกเขากัน',
+                                'ค้นหาสหายแล้วปาสแครปใส่พวกเขากัน',
                                 style: TextStyle(
                                     fontSize: a.width / 16,
                                     color: Colors.white,
@@ -413,6 +413,10 @@ class _FriendListState extends State<FriendList> {
                             height: a.width / 5,
                             child: ClipRRect(
                               child: CachedNetworkImage(
+                                errorWidget: (context, string, odject) {
+                                  return Image.asset('assets/userprofile.png',
+                                      fit: BoxFit.cover);
+                                },
                                 imageUrl: img,
                                 fit: BoxFit.cover,
                               ),
@@ -531,12 +535,11 @@ class _FriendListState extends State<FriendList> {
               FlatButton(
                 child: Text('ตกลง'),
                 onPressed: () async {
-                  scraps.throwTo(
+                  scraps.throwTo(context,
                       uid: widget.doc['uid'],
                       writer: widget.doc['id'],
                       thrownUID: accDoc['uid'],
-                      text: widget.data['text'],
-                      public: widget.data['public']);
+                      text: widget.data['text']);
                   toast('ปาใส่${accDoc['id']}แล้ว');
                 },
               )
@@ -550,7 +553,7 @@ class _FriendListState extends State<FriendList> {
         msg: text,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
-        timeInSecForIos: 1,
+        //timeInSecForIos: 1,
         backgroundColor: Colors.white60,
         textColor: Colors.black,
         fontSize: 16.0);
@@ -721,6 +724,10 @@ class _AllFriendsState extends State<AllFriends> {
                           height: a.width / 4.8,
                           child: ClipRRect(
                             child: CachedNetworkImage(
+                              errorWidget: (context, string, odject) {
+                                return Image.asset('assets/userprofile.png',
+                                    fit: BoxFit.cover);
+                              },
                               imageUrl: img,
                               fit: BoxFit.cover,
                             ),

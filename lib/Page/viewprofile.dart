@@ -21,7 +21,7 @@ class Viewprofile extends StatefulWidget {
 }
 
 class _ViewprofileState extends State<Viewprofile> {
-  bool public, loading = true;
+  bool loading = true;
   String text, img; // <== Don't forget to init value
   String friendUID;
   List friends = [];
@@ -92,10 +92,11 @@ class _ViewprofileState extends State<Viewprofile> {
           remove ? FieldValue.arrayRemove([uid]) : FieldValue.arrayUnion([uid])
     }, merge: true);
     if (remove) {
-      await jsonConverter.removeContent(key: 'id', where: id);
+      await jsonConverter.removeContent(uid: uid, key: 'id', where: id);
       friends.removeWhere((dat) => dat['id'] == id);
     } else {
-      await jsonConverter.addContent(id: id, imgUrl: img, joinD: join);
+      await jsonConverter.addContent(
+          uid: uid, id: id, imgUrl: img, joinD: join);
       friends.add({'id': id, 'imgUrl': img, 'join': join});
     }
     setState(() {});
@@ -307,6 +308,12 @@ class _ViewprofileState extends State<Viewprofile> {
                                                         BorderRadius.circular(
                                                             a.width),
                                                     child: CachedNetworkImage(
+                                                      errorWidget: (context,
+                                                          string, odject) {
+                                                        return Image.asset(
+                                                            'assets/userprofile.png',
+                                                            fit: BoxFit.cover);
+                                                      },
                                                       imageUrl:
                                                           info.data['img'],
                                                       fit: BoxFit.cover,
@@ -322,8 +329,9 @@ class _ViewprofileState extends State<Viewprofile> {
                                                 fontSize: a.width / 12),
                                           ),
                                           Text(
-                                            info.data['createdDay'].runtimeType
-                                                    == String
+                                            info.data['createdDay']
+                                                        .runtimeType ==
+                                                    String
                                                 ? "Join ${info.data['createdDay']}"
                                                 : "Join ${DateFormat('d/M/y').format(info.data['createdDay'].toDate())}",
                                             style: TextStyle(
@@ -575,11 +583,10 @@ class _ViewprofileState extends State<Viewprofile> {
                     Navigator.pop(context);
                     Navigator.pop(context);
                     Navigator.pop(context, true);
-                    await scraps.throwTo(
+                    await scraps.throwTo(context,
                         uid: widget.self['uid'],
                         thrownUID: thrownUID,
                         text: widget.data['text'],
-                        public: widget.data['public'],
                         writer: widget.self['id']);
                   }
                 },
@@ -594,7 +601,7 @@ class _ViewprofileState extends State<Viewprofile> {
         msg: text,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
-        timeInSecForIos: 1,
+        // timeInSecForIos: 1,
         backgroundColor: Colors.white60,
         textColor: Colors.black,
         fontSize: 16.0);
@@ -633,221 +640,161 @@ class _ViewprofileState extends State<Viewprofile> {
                         bottom: a.width / 8),
                     child: ListView(
                       children: <Widget>[
-                        Form(
-                          key: _key,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                        //ออกจากหน้านี้
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            child: Icon(
+                              Icons.clear,
+                              size: a.width / 10,
+                              color: Colors.white,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+
+                        //���่ว��ของกระดาษ�������่เขี�����
+                        Container(
+                          margin: EdgeInsets.only(top: a.width / 50),
+                          width: a.width / 1,
+                          height: a.height / 1.8,
+                          //ทำเ����นชั้นๆ
+                          child: Stack(
                             children: <Widget>[
+                              //ช���้นที่ 1 ส่วนของก���ะดาษ
                               Container(
-                                width: a.height,
-                                alignment: Alignment.center,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                child: Image.asset(
+                                  'assets/paper-readed.png',
+                                  width: a.width / 1,
+                                  height: a.height / 1.8,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              //ชั้นที่ 2
+                              Container(
+                                margin: EdgeInsets.only(
+                                    left: a.width / 20, top: a.width / 20),
+                                width: a.width,
+                                alignment: Alignment.topLeft,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    //ปุ่มกดหากต้องการที่จะเปิดเผยตัวตน
-                                    Container(
-                                      child: Row(
-                                        children: <Widget>[
-                                          Container(
-                                            width: a.width / 13,
-                                            height: a.width / 13,
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        a.width / 50),
-                                                border: Border.all(
-                                                    color: Colors.white)),
-                                            child: Checkbox(
-                                              value: public ?? false,
-                                              onChanged: (bool value) {
-                                                setState(() {
-                                                  public = value;
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                          Container(
-                                            child: Text(
-                                              "\t" + "เปิดเผยตัวตน",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: a.width / 20),
-                                            ),
-                                          )
-                                        ],
-                                      ),
+                                    Row(
+                                      children: <Widget>[
+                                        Text(
+                                          "เขียนโดย : ",
+                                          style: TextStyle(
+                                              fontSize: a.width / 22,
+                                              color: Colors.grey),
+                                        ),
+                                        Text("@${widget.self['id']}",
+                                            style: TextStyle(
+                                                fontSize: a.width / 22,
+                                                color: Color(0xff26A4FF)))
+                                      ],
                                     ),
-                                    //ออกจากหน้านี้
-                                    InkWell(
-                                      child: Icon(
-                                        Icons.clear,
-                                        size: a.width / 10,
-                                        color: Colors.white,
-                                      ),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
+                                    Text("เวลา" + " : " + time,
+                                        style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: a.width / 22))
                                   ],
                                 ),
                               ),
-                              //���่ว��ของกระดาษ�������่เขี�����
+                              //ชั้นที่ 3 เอาไว้สำหรับเขียนข้อความ
                               Container(
-                                margin: EdgeInsets.only(top: a.width / 50),
-                                width: a.width / 1,
-                                height: a.height / 1.8,
-                                //ทำเ����นชั้นๆ
-                                child: Stack(
-                                  children: <Widget>[
-                                    //ช���้นที่ 1 ส่วนของก���ะดาษ
-                                    Container(
-                                      child: Image.asset(
-                                        'assets/paper-readed.png',
-                                        width: a.width / 1,
-                                        height: a.height / 1.8,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    //ชั้นที่ 2
-                                    Container(
-                                      margin: EdgeInsets.only(
-                                          left: a.width / 20,
-                                          top: a.width / 20),
-                                      width: a.width,
-                                      alignment: Alignment.topLeft,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          public ?? false
-                                              ? Row(
-                                                  children: <Widget>[
-                                                    Text(
-                                                      "เขียนโดย : ",
-                                                      style: TextStyle(
-                                                          fontSize:
-                                                              a.width / 22,
-                                                          color: Colors.grey),
-                                                    ),
-                                                    Text(
-                                                        "@${widget.self['id']}",
-                                                        style: TextStyle(
-                                                            fontSize:
-                                                                a.width / 22,
-                                                            color: Color(
-                                                                0xff26A4FF)))
-                                                  ],
-                                                )
-                                              : Text(
-                                                  'เขียนโดย : ใครสักคน',
-                                                  style: TextStyle(
-                                                      fontSize: a.width / 22,
-                                                      color: Colors.grey),
-                                                ),
-                                          Text("เวลา" + " : " + time,
-                                              style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: a.width / 22))
-                                        ],
-                                      ),
-                                    ),
-                                    //ชั้นที่ 3 เอาไว้สำหรับเขียนข้อความ
-                                    Container(
-                                      width: a.width,
-                                      height: a.height,
-                                      alignment: Alignment.center,
-                                      child: Container(
-                                        padding: EdgeInsets.only(
-                                            left: 25, right: 25),
-                                        width: a.width,
-                                        child: TextFormField(
-                                          textAlign: TextAlign
-                                              .center, //เพื่อให้ข้อความอยู่ตรงกลาง
-                                          style:
-                                              TextStyle(fontSize: a.width / 14),
-                                          maxLines: null,
-                                          maxLength: 250,
-                                          keyboardType: TextInputType.text,
-                                          decoration: InputDecoration(
-                                            counterText: "",
-                                            border: InputBorder
-                                                .none, //สำหรับใหเส้นใต้หาย
-                                            hintText: 'เขียนข้อความบางอย่าง',
-                                            hintStyle: TextStyle(
-                                              height: 1.35,
-                                              fontSize: a.width / 18,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                          //หากไม่ได้กรอกจะขึ้น
-                                          validator: (val) {
-                                            return val.trim() == null ||
-                                                    val.trim() == ""
-                                                ? Taoast().toast(
-                                                    "ลองเขียนข้อความบางอย่างสิ")
-                                                : null;
-                                          },
-                                          //เนื้อหาที่กรอกเข้าไปใน text
-                                          onChanged: (val) {
-                                            text = val;
-                                          },
+                                width: a.width,
+                                height: a.height,
+                                alignment: Alignment.center,
+                                child: Container(
+                                  padding: EdgeInsets.only(left: 25, right: 25),
+                                  width: a.width,
+                                  child: Form(
+                                    key: _key,
+                                    child: TextFormField(
+                                      textAlign: TextAlign
+                                          .center, //เพื่อให้ข้อความอยู่ตรงกลาง
+                                      style: TextStyle(fontSize: a.width / 14),
+                                      maxLines: null,
+                                      maxLength: 250,
+                                      keyboardType: TextInputType.text,
+                                      decoration: InputDecoration(
+                                        counterText: "",
+                                        border: InputBorder
+                                            .none, //สำหรับใหเส้นใต้หาย
+                                        hintText: 'เขียนข้อความบางอย่าง',
+                                        hintStyle: TextStyle(
+                                          height: 1.35,
+                                          fontSize: a.width / 18,
+                                          color: Colors.grey,
                                         ),
                                       ),
-                                    )
-                                    //)
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: a.width / 10),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    //ปุ่มปาใส่
-                                    InkWell(
-                                      child: Container(
-                                        width: a.width / 4.5,
-                                        height: a.width / 8,
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(a.width)),
-                                        alignment: Alignment.center,
-                                        child: Text("ปาเลย",
-                                            style: TextStyle(
-                                                fontSize: a.width / 15,
-                                                fontWeight: FontWeight.bold)),
-                                      ),
-                                      //ให้ dialog แรกหายไปก่อนแล้วเปิด dialog2
-                                      onTap: () async {
-                                        if (_key.currentState.validate()) {
-                                          _key.currentState.save();
-                                          if (await scraps.blocked(
-                                              widget.self['uid'], uid)) {
-                                            Navigator.pop(context);
-                                            Navigator.pop(context);
-                                            toast('คุณไม่สามารถปาไปหา"$id"ได้');
-                                          } else {
-                                            Navigator.pop(context);
-                                            Navigator.pop(context, true);
-                                            await scraps.throwTo(
-                                                uid: widget.self['uid'],
-                                                thrownUID: uid,
-                                                text: text,
-                                                public: public,
-                                                writer: widget.self['id']);
-                                            Taoast().toast('ปาใส่"$id"แล้ว');
-                                          }
-                                        }
+                                      //หากไม่ได้กรอกจะขึ้น
+                                      validator: (val) {
+                                        return val.trim() == null ||
+                                                val.trim() == ""
+                                            ? Taoast().toast(
+                                                "ลองเขียนข้อความบางอย่างสิ")
+                                            : null;
                                       },
-                                    )
-                                  ],
+                                      //เนื้อหาที่กรอกเข้าไปใน text
+                                      onChanged: (val) {
+                                        text = val;
+                                      },
+                                    ),
+                                  ),
                                 ),
                               )
+                              //)
                             ],
                           ),
                         ),
+                        Container(
+                          margin: EdgeInsets.only(top: a.width / 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              //ปุ่มปาใส่
+                              InkWell(
+                                child: Container(
+                                  width: a.width / 4.5,
+                                  height: a.width / 8,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                          BorderRadius.circular(a.width)),
+                                  alignment: Alignment.center,
+                                  child: Text("ปาเลย",
+                                      style: TextStyle(
+                                          fontSize: a.width / 15,
+                                          fontWeight: FontWeight.bold)),
+                                ),
+                                //ให้ dialog แรกหายไปก่อนแล้วเปิด dialog2
+                                onTap: () async {
+                                  if (_key.currentState.validate()) {
+                                    _key.currentState.save();
+                                    if (await scraps.blocked(
+                                        widget.self['uid'], uid)) {
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      toast('คุณไม่สามารถปาไปหา"$id"ได้');
+                                    } else {
+                                      Navigator.pop(context);
+                                      Navigator.pop(context, true);
+                                      // await scraps.throwTo(
+                                      //     uid: widget.self['uid'],
+                                      //     thrownUID: uid,
+                                      //     text: text,
+                                      //     writer: widget.self['id']);
+                                      Taoast().toast('ปาใส่"$id"แล้ว');
+                                    }
+                                  }
+                                },
+                              )
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),
